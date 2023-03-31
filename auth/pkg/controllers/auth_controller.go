@@ -4,6 +4,7 @@ import (
 	"auth/pkg/utils"
 	"database/sql"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/golang-jwt/jwt/v4"
@@ -55,7 +56,7 @@ func (h *Controller) Login(c echo.Context) error {
 		})
 	}
 
-	t, err := createJWTToken(req.Email, "secret")
+	t, err := createJWTToken(req.Email, os.Getenv("JWT_SECRET"))
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, echo.Map{
 			"error": err.Error(),
@@ -87,16 +88,11 @@ func (h *Controller) Validate(c echo.Context) error {
 	var userPresent bool
 	if err := h.Db.QueryRowContext(
 		c.Request().Context(),
-		"SELECT COUNT(1) > 0 FROM users WHERE email = $1",
+		"SELECT 1 FROM users WHERE email = $1",
 		claims.Email).Scan(&userPresent); err != nil {
 		return c.JSON(http.StatusUnauthorized, echo.Map{
 			"error": err.Error(),
 		})
 	}
-	if !userPresent {
-		return c.JSON(http.StatusUnauthorized, echo.Map{
-			"error": "Invalid token",
-		})
-	}
-	return c.String(http.StatusOK, "Welcome "+claims.Email+"!")
+	return c.JSON(http.StatusOK, echo.Map{})
 }

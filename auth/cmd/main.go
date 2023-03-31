@@ -3,7 +3,9 @@ package main
 import (
 	"auth/pkg/controllers"
 	"database/sql"
+	"fmt"
 	"log"
+	"os"
 
 	"github.com/go-playground/validator"
 	"github.com/golang-jwt/jwt/v4"
@@ -25,8 +27,7 @@ func (cv *CustomValidator) Validate(i interface{}) error {
 }
 
 func main() {
-	connStr := "postgresql://authuser:mysecretpassword@localhost/auth?sslmode=disable"
-	// Connect to database
+	connStr := os.Getenv("DATABASE_URL")
 	db, err := sql.Open("postgres", connStr)
 	if err != nil {
 		log.Fatal(err)
@@ -48,8 +49,8 @@ func main() {
 		NewClaimsFunc: func(c echo.Context) jwt.Claims {
 			return new(controllers.JwtCustomClaims)
 		},
-		SigningKey: []byte("secret"),
+		SigningKey: []byte(os.Getenv("JWT_SECRET")),
 	}
 	e.POST("/validate", controller.Validate, echojwt.WithConfig(config))
-	e.Logger.Fatal(e.Start(":1323"))
+	e.Logger.Fatal(e.Start(fmt.Sprintf(":%s", os.Getenv("PORT"))))
 }
