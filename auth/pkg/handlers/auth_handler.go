@@ -1,4 +1,4 @@
-package controllers
+package handlers
 
 import (
 	"auth/pkg/utils"
@@ -22,12 +22,12 @@ type (
 		Password string `json:"password" validate:"required"`
 	}
 
-	Controller struct {
+	Handler struct {
 		Db *sql.DB
 	}
 )
 
-func (h *Controller) Login(c echo.Context) error {
+func (h *Handler) Login(c echo.Context) error {
 	req := new(LoginRequest)
 	if err := c.Bind(req); err != nil {
 		return c.JSON(http.StatusBadRequest, echo.Map{
@@ -82,7 +82,7 @@ func createJWTToken(email, secret string) (string, error) {
 	return t, nil
 }
 
-func (h *Controller) Validate(c echo.Context) error {
+func (h *Handler) Validate(c echo.Context) error {
 	user := c.Get("user").(*jwt.Token)
 	claims := user.Claims.(*JwtCustomClaims)
 	var userPresent bool

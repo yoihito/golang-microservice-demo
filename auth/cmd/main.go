@@ -1,7 +1,7 @@
 package main
 
 import (
-	"auth/pkg/controllers"
+	"auth/pkg/handlers"
 	"database/sql"
 	"fmt"
 	"log"
@@ -42,15 +42,15 @@ func main() {
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
 
-	controller := &controllers.Controller{Db: db}
+	handler := &handlers.Handler{Db: db}
 
-	e.POST("/login", controller.Login)
+	e.POST("/login", handler.Login)
 	config := echojwt.Config{
 		NewClaimsFunc: func(c echo.Context) jwt.Claims {
-			return new(controllers.JwtCustomClaims)
+			return new(handlers.JwtCustomClaims)
 		},
 		SigningKey: []byte(os.Getenv("JWT_SECRET")),
 	}
-	e.POST("/validate", controller.Validate, echojwt.WithConfig(config))
+	e.POST("/validate", handler.Validate, echojwt.WithConfig(config))
 	e.Logger.Fatal(e.Start(fmt.Sprintf(":%s", os.Getenv("PORT"))))
 }
