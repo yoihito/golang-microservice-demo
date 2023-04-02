@@ -1,7 +1,6 @@
 package main
 
 import (
-	"context"
 	"fmt"
 	"gateway/pkg/handlers"
 	"gateway/pkg/middlewares"
@@ -12,9 +11,6 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/spf13/viper"
-	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
-	"go.mongodb.org/mongo-driver/mongo/readpref"
 )
 
 func main() {
@@ -23,19 +19,17 @@ func main() {
 		log.Fatal(err)
 	}
 
-	mongoClient, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(config.MongoDbUrl))
+	storageService, err := services.NewGridFSService(config.MongoDbUrl)
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	if err := mongoClient.Ping(context.TODO(), readpref.Primary()); err != nil {
-		log.Fatal(err)
-	}
+	defer storageService.Close()
 
 	queueService, err := services.NewRabbitMqService(config.RabbitMqUrl)
 	if err != nil {
 		log.Fatal(err)
 	}
+	defer queueService.Close()
 
 	e := echo.New()
 	e.Use(middleware.Logger())
@@ -58,9 +52,9 @@ func main() {
 		config.AuthServiceUrl,
 	)
 	handler := &handlers.Handler{
-		Auth:         authService,
-		MongoClient:  mongoClient,
-		QueueService: queueService,
+		Auth:           authService,
+		StorageService: storageService,
+		QueueService:   queueService,
 	}
 	e.POST("/signin", handler.Signin)
 

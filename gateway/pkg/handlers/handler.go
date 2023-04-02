@@ -2,8 +2,6 @@ package handlers
 
 import (
 	"gateway/pkg/services"
-
-	"go.mongodb.org/mongo-driver/mongo"
 )
 
 type AuthService interface {
@@ -11,7 +9,7 @@ type AuthService interface {
 }
 
 type Handler struct {
-	Auth         AuthService
-	MongoClient  *mongo.Client
-	QueueService services.QueueService
+	Auth           AuthService
+	StorageService services.StorageService
+	QueueService   services.QueueService
 }
