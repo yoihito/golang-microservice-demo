@@ -46,7 +46,7 @@ func (s *GridFSService) UploadFromStream(filename string, src io.Reader) (string
 		return "", err
 	}
 
-	return objectId.String(), nil
+	return objectId.Hex(), nil
 }
 
 func (s *GridFSService) Close() {

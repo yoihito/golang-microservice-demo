@@ -6,6 +6,7 @@ import (
 	"gateway/pkg/middlewares"
 	"gateway/pkg/services"
 	"gateway/pkg/utils"
+	"io/fs"
 	"log"
 
 	"github.com/labstack/echo/v4"
@@ -76,8 +77,11 @@ func LoadConfig() (Config, error) {
 	viper.SetConfigFile("application.yaml")
 	viper.AutomaticEnv()
 	if err := viper.ReadInConfig(); err != nil {
-		if _, ok := err.(viper.ConfigFileNotFoundError); !ok {
-			return Config{}, err
+		switch err.(type) {
+		case viper.ConfigFileNotFoundError:
+		case *fs.PathError:
+		default:
+			return Config{}, nil
 		}
 	}
 
