@@ -41,27 +41,35 @@ func (s *AuthService) Login(email string, password string) (string, error) {
 	return res["token"].(string), nil
 }
 
-func (s *AuthService) Validate(token string) error {
-	req, err := http.NewRequest("POST", s.serviceUrl+"/validate", nil)
+type UserMetadata struct {
+	userEmail string
+}
+
+func (u *UserMetadata) Email() string {
+	return u.userEmail
+}
+
+func (s *AuthService) Validate(token string) (UserMetadata, error) {
+	req, _ := http.NewRequest("POST", s.serviceUrl+"/validate", nil)
 	req.Header.Add("Authorization", "Bearer "+token)
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
-		return err
+		return UserMetadata{}, err
 	}
 	defer resp.Body.Close()
 	var res map[string]interface{}
 	err = json.NewDecoder(resp.Body).Decode(&res)
 	if err != nil {
-		return err
+		return UserMetadata{}, err
 	}
 	if resp.StatusCode != 200 {
 		if value, ok := res["error"]; ok {
-			return fmt.Errorf("error: %s", value.(string))
+			return UserMetadata{}, fmt.Errorf("error: %s", value.(string))
 		} else {
-			return errors.New("invalid token")
+			return UserMetadata{}, errors.New("invalid token")
 		}
 	}
 
-	return nil
+	return UserMetadata{userEmail: res["email"].(string)}, nil
 }

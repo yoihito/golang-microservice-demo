@@ -1,6 +1,7 @@
 package middlewares
 
 import (
+	"gateway/pkg/services"
 	"gateway/pkg/utils"
 	"strings"
 
@@ -8,7 +9,7 @@ import (
 )
 
 type AuthService interface {
-	Validate(token string) error
+	Validate(token string) (services.UserMetadata, error)
 }
 
 func TokenVerification(auth AuthService) echo.MiddlewareFunc {
@@ -22,13 +23,14 @@ func TokenVerification(auth AuthService) echo.MiddlewareFunc {
 					Message: "Invalid token",
 				}
 			}
-			err := auth.Validate(parts[1])
+			userMetadata, err := auth.Validate(parts[1])
 			if err != nil {
 				return utils.JSONError{
 					Code:    401,
 					Message: err.Error(),
 				}
 			}
+			c.Set("access", userMetadata)
 			return next(c)
 		}
 	}

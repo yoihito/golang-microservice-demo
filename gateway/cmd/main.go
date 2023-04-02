@@ -32,6 +32,11 @@ func main() {
 		log.Fatal(err)
 	}
 
+	queueService, err := services.NewRabbitMqService(config.RabbitMqUrl)
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	e := echo.New()
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
@@ -53,8 +58,9 @@ func main() {
 		config.AuthServiceUrl,
 	)
 	handler := &handlers.Handler{
-		Auth:        authService,
-		MongoClient: mongoClient,
+		Auth:         authService,
+		MongoClient:  mongoClient,
+		QueueService: queueService,
 	}
 	e.POST("/signin", handler.Signin)
 
@@ -69,6 +75,7 @@ type Config struct {
 	MongoDbUrl     string
 	Port           string
 	AuthServiceUrl string
+	RabbitMqUrl    string
 }
 
 func LoadConfig() (Config, error) {
@@ -84,6 +91,7 @@ func LoadConfig() (Config, error) {
 		Port:           viper.GetString("PORT"),
 		MongoDbUrl:     viper.GetString("MONGO_DB_URL"),
 		AuthServiceUrl: viper.GetString("AUTH_SERVICE_URL"),
+		RabbitMqUrl:    viper.GetString("RABBITMQ_URL"),
 	}
 	return config, nil
 }

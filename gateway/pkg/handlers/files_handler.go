@@ -1,6 +1,8 @@
 package handlers
 
 import (
+	"encoding/json"
+	"gateway/pkg/services"
 	"gateway/pkg/utils"
 	"net/http"
 
@@ -31,7 +33,22 @@ func (h *Handler) Upload(c echo.Context) error {
 		return utils.JSONError{Code: http.StatusInternalServerError, Message: err.Error()}
 	}
 
+	access := c.Get("access").(services.UserMetadata)
+
+	event := VideoUploadedEvent{
+		ObjectId: objectId.String(),
+		Email:    access.Email(),
+	}
+	data, _ := json.Marshal(event)
+
+	h.QueueService.Publish(c.Request().Context(), "videos", data)
+
 	return c.JSON(http.StatusOK, echo.Map{"objectId": objectId})
+}
+
+type VideoUploadedEvent struct {
+	ObjectId string `json:"objectId"`
+	Email    string `json:"email"`
 }
 
 func (h *Handler) Download(c echo.Context) error {

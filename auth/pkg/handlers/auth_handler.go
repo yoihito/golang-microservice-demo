@@ -94,5 +94,7 @@ func (h *Handler) Validate(c echo.Context) error {
 			"error": err.Error(),
 		})
 	}
-	return c.JSON(http.StatusOK, echo.Map{})
+	return c.JSON(http.StatusOK, echo.Map{
+		"email": claims.Email,
+	})
 }
