@@ -34,7 +34,7 @@ services:
       - AUTH_SERVICE_URL=http://auth:1323
       - PORT=1324
       - RABBIT_MQ_URL=amqp://guest:guest@rabbitmq:5672
-      - QUEUES="videos"
+      - QUEUES=videos
     depends_on:
       mongo:
         condition: service_healthy
@@ -71,8 +71,8 @@ services:
     environment:
       - MONGO_DB_URL=mongodb://root:password@mongo:27017
       - RABBIT_MQ_URL=amqp://guest:guest@rabbitmq:5672
-      - VIDEO_QUEUE="videos"
-      - AUDIO_QUEUE="audios"
+      - VIDEO_QUEUE=videos
+      - AUDIO_QUEUE=audios
     depends_on:
       mongo:
         condition: service_healthy

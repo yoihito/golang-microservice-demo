@@ -2,17 +2,16 @@ package main
 
 import (
 	"fmt"
-	"io/fs"
 	"log"
 
 	"converter/internal/operations"
 	"converter/internal/services"
 
-	"github.com/spf13/viper"
+	"converter/internal/config"
 )
 
 func main() {
-	config, err := LoadConfig()
+	config, err := config.LoadConfig()
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -23,7 +22,7 @@ func main() {
 	}
 
 	consumerQueue, err := services.NewRabbitMqService(config.RabbitMqUrl, []services.RabbitMqQueue{{config.VideoQueue}})
-	publisherQueue, err := services.NewRabbitMqService(config.RabbitMqUrl, []services.RabbitMqQueue{{config.AudioQueue()}})
+	publisherQueue, err := services.NewRabbitMqService(config.RabbitMqUrl, []services.RabbitMqQueue{{config.AudioQueue}})
 
 	msgs, err := consumerQueue.Consume(config.VideoQueue, false)
 	if err != nil {
@@ -33,7 +32,7 @@ func main() {
 	processor := operations.Processor{
 		Storage: storage,
 		Queue:   publisherQueue,
-		Config:  &config,
+		Config:  config,
 	}
 	forever := make(chan bool)
 	go func() {
@@ -49,36 +48,4 @@ func main() {
 
 	fmt.Println("Waiting for messages...")
 	<-forever
-}
-
-type Config struct {
-	MongoDbUrl  string
-	RabbitMqUrl string
-	VideoQueue  string
-	audioQueue  string
-}
-
-func (c *Config) AudioQueue() string {
-	return c.audioQueue
-}
-
-func LoadConfig() (Config, error) {
-	viper.SetConfigFile("application.yaml")
-	viper.AutomaticEnv()
-	if err := viper.ReadInConfig(); err != nil {
-		switch err.(type) {
-		case viper.ConfigFileNotFoundError:
-		case *fs.PathError:
-		default:
-			return Config{}, nil
-		}
-	}
-
-	config := Config{
-		MongoDbUrl:  viper.GetString("MONGO_DB_URL"),
-		RabbitMqUrl: viper.GetString("RABBIT_MQ_URL"),
-		VideoQueue:  viper.GetString("VIDEO_QUEUE"),
-		audioQueue:  viper.GetString("AUDIO_QUEUE"),
-	}
-	return config, nil
 }

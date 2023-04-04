@@ -3,6 +3,7 @@ package operations
 import (
 	"bytes"
 	"context"
+	"converter/internal/config"
 	"converter/internal/services"
 	"encoding/json"
 	"io"
@@ -28,14 +29,10 @@ type TempFile struct {
 	File *os.File
 }
 
-type Config interface {
-	AudioQueue() string
-}
-
 type Processor struct {
 	Storage services.StorageService
 	Queue   services.QueueService
-	Config  Config
+	Config  config.Config
 }
 
 func (p *Processor) ProcessMessage(msg services.Delivery) error {
@@ -66,7 +63,7 @@ func (p *Processor) ProcessMessage(msg services.Delivery) error {
 		OriginalFilename: tmpFile.Name,
 		Email:            event.Email,
 	}
-	err = p.Queue.Publish(context.TODO(), p.Config.AudioQueue(), audioExtractedEvent)
+	err = p.Queue.Publish(context.TODO(), p.Config.AudioQueue, audioExtractedEvent)
 	if err != nil {
 		return err
 	}
