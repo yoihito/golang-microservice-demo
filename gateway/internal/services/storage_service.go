@@ -11,7 +11,7 @@ import (
 )
 
 type StorageService interface {
-	UploadFromStream(filename string, reader io.Reader) (string, error)
+	UploadFromStream(database, filename string, reader io.Reader) (string, error)
 }
 
 type GridFSService struct {
@@ -33,8 +33,8 @@ func NewGridFSService(serviceUrl string) (*GridFSService, error) {
 	}, nil
 }
 
-func (s *GridFSService) UploadFromStream(filename string, src io.Reader) (string, error) {
-	db := s.mongoClient.Database("videos")
+func (s *GridFSService) UploadFromStream(database, filename string, src io.Reader) (string, error) {
+	db := s.mongoClient.Database(database)
 	bucket, err := gridfs.NewBucket(db)
 	if err != nil {
 		return "", err

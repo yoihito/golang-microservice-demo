@@ -15,7 +15,11 @@ type RabbitMqService struct {
 	channel    *amqp.Channel
 }
 
-func NewRabbitMqService(serviceUrl string) (*RabbitMqService, error) {
+type RabbitMqQueue struct {
+	Name string
+}
+
+func NewRabbitMqService(serviceUrl string, queues []RabbitMqQueue) (*RabbitMqService, error) {
 	conn, err := amqp.Dial(serviceUrl)
 	if err != nil {
 		return nil, err
@@ -24,6 +28,13 @@ func NewRabbitMqService(serviceUrl string) (*RabbitMqService, error) {
 	ch, err := conn.Channel()
 	if err != nil {
 		return nil, err
+	}
+
+	for _, queue := range queues {
+		_, err = ch.QueueDeclare(queue.Name, false, false, false, false, nil)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	return &RabbitMqService{

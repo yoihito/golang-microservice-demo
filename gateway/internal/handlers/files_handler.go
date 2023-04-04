@@ -2,8 +2,8 @@ package handlers
 
 import (
 	"encoding/json"
-	"gateway/pkg/services"
-	"gateway/pkg/utils"
+	"gateway/internal/services"
+	"gateway/internal/utils"
 	"mime/multipart"
 	"net/http"
 
@@ -22,7 +22,7 @@ func (h *Handler) Upload(c echo.Context) error {
 	}
 	defer src.Close()
 
-	objectId, err := h.StorageService.UploadFromStream(fileName, src)
+	objectId, err := h.StorageService.UploadFromStream("videos", fileName, src)
 	if err != nil {
 		return utils.JSONError{Code: http.StatusInternalServerError, Message: err.Error()}
 	}
@@ -35,7 +35,9 @@ func (h *Handler) Upload(c echo.Context) error {
 	}
 	data, _ := json.Marshal(event)
 
-	h.QueueService.Publish(c.Request().Context(), "videos", data)
+	if err := h.QueueService.Publish(c.Request().Context(), "videos", data); err != nil {
+		return utils.JSONError{Code: http.StatusInternalServerError, Message: err.Error()}
+	}
 
 	return c.JSON(http.StatusOK, echo.Map{"objectId": objectId})
 }

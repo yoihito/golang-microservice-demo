@@ -1,7 +1,7 @@
 package main
 
 import (
-	"auth/pkg/handlers"
+	"auth/internal/handlers"
 	"database/sql"
 	"fmt"
 	"log"

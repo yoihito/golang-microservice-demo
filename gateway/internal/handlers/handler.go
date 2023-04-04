@@ -1,7 +1,7 @@
 package handlers
 
 import (
-	"gateway/pkg/services"
+	"gateway/internal/services"
 )
 
 type AuthService interface {

@@ -1,8 +1,8 @@
 package middlewares
 
 import (
-	"gateway/pkg/services"
-	"gateway/pkg/utils"
+	"gateway/internal/services"
+	"gateway/internal/utils"
 	"strings"
 
 	"github.com/labstack/echo/v4"

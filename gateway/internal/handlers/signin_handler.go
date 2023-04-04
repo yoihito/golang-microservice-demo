@@ -1,7 +1,7 @@
 package handlers
 
 import (
-	"gateway/pkg/utils"
+	"gateway/internal/utils"
 	"net/http"
 
 	"github.com/labstack/echo/v4"

@@ -1,7 +1,7 @@
 package handlers
 
 import (
-	"auth/pkg/utils"
+	"auth/internal/utils"
 	"database/sql"
 	"net/http"
 	"os"

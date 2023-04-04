@@ -1,0 +1,83 @@
+services:
+  auth:
+    build: ./auth
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    ports: 
+      - "1323:1323"
+    environment:
+      - DATABASE_URL=postgresql://authuser:mysecretpassword@postgresql/auth?sslmode=disable
+      - JWT_SECRET=secret
+      - PORT=1323
+    depends_on:
+      postgresql:
+        condition: service_healthy
+  postgresql:
+    image: postgres 
+    environment:
+      - POSTGRES_USER=authuser
+      - POSTGRES_PASSWORD=mysecretpassword
+      - POSTGRES_DB=auth
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+  gateway: 
+    build: ./gateway
+    ports:
+      - "1324:1324"
+    environment:
+      - MONGO_DB_URL=mongodb://root:password@mongo:27017
+      - AUTH_SERVICE_URL=http://auth:1323
+      - PORT=1324
+      - RABBIT_MQ_URL=amqp://guest:guest@rabbitmq:5672
+      - QUEUES="videos"
+    depends_on:
+      mongo:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      auth:
+        condition: service_started
+  mongo:
+    image: mongo
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=password
+    ports:
+      - "27017:27017"
+    healthcheck:
+      test: ["CMD","mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+  rabbitmq:
+    image: rabbitmq:3.11-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    healthcheck:
+      test: rabbitmq-diagnostics check_port_connectivity
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+  converter:
+    build: ./converter
+    environment:
+      - MONGO_DB_URL=mongodb://root:password@mongo:27017
+      - RABBIT_MQ_URL=amqp://guest:guest@rabbitmq:5672
+      - VIDEO_QUEUE="videos"
+      - AUDIO_QUEUE="audios"
+    depends_on:
+      mongo:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+
+volumes:
+  postgres-data:

@@ -2,10 +2,10 @@ package main
 
 import (
 	"fmt"
-	"gateway/pkg/handlers"
-	"gateway/pkg/middlewares"
-	"gateway/pkg/services"
-	"gateway/pkg/utils"
+	"gateway/internal/handlers"
+	"gateway/internal/middlewares"
+	"gateway/internal/services"
+	"gateway/internal/utils"
 	"io/fs"
 	"log"
 
@@ -26,7 +26,12 @@ func main() {
 	}
 	defer storageService.Close()
 
-	queueService, err := services.NewRabbitMqService(config.RabbitMqUrl)
+	queues := []services.RabbitMqQueue{}
+	for _, queueName := range config.Queues {
+		queues = append(queues, services.RabbitMqQueue{Name: queueName})
+	}
+
+	queueService, err := services.NewRabbitMqService(config.RabbitMqUrl, queues)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -71,6 +76,7 @@ type Config struct {
 	Port           string
 	AuthServiceUrl string
 	RabbitMqUrl    string
+	Queues         []string
 }
 
 func LoadConfig() (Config, error) {
@@ -89,7 +95,8 @@ func LoadConfig() (Config, error) {
 		Port:           viper.GetString("PORT"),
 		MongoDbUrl:     viper.GetString("MONGO_DB_URL"),
 		AuthServiceUrl: viper.GetString("AUTH_SERVICE_URL"),
-		RabbitMqUrl:    viper.GetString("RABBITMQ_URL"),
+		RabbitMqUrl:    viper.GetString("RABBIT_MQ_URL"),
+		Queues:         viper.GetStringSlice("QUEUES"),
 	}
 	return config, nil
 }
