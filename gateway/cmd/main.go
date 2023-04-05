@@ -31,10 +31,10 @@ func main() {
 		queues = append(queues, services.RabbitMqQueue{Name: queueName})
 	}
 
-	queueService, err := services.NewRabbitMqService(config.RabbitMqUrl, queues)
-	if err != nil {
-		log.Fatal(err)
-	}
+	queueService := services.NewRabbitMqService(config.RabbitMqUrl, queues)
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
 	defer queueService.Close()
 
 	e := echo.New()

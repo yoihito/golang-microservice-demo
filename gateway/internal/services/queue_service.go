@@ -8,54 +8,90 @@ import (
 	amqp "github.com/rabbitmq/amqp091-go"
 )
 
+var (
+	errNotConnected  = errors.New("not connected to RabbitMQ server")
+	errAlreadyClosed = errors.New("already closed")
+	errShutdown      = errors.New("shutting down")
+)
+
 type QueueService interface {
 	Publish(ctx context.Context, topic string, message []byte) error
 }
 
 type RabbitMqService struct {
-	connection    *amqp.Connection
-	channel       *amqp.Channel
-	queues        []RabbitMqQueue
-	notifyConfirm chan amqp.Confirmation
-	isReady       bool
+	connection      *amqp.Connection
+	channel         *amqp.Channel
+	queues          []RabbitMqQueue
+	done            chan struct{}
+	notifyConnClose chan *amqp.Error
+	notifyChClose   chan *amqp.Error
+	notifyConfirm   chan amqp.Confirmation
+	isReady         bool
 }
 
 type RabbitMqQueue struct {
 	Name string
 }
 
-func NewRabbitMqService(serviceUrl string, queues []RabbitMqQueue) (*RabbitMqService, error) {
+func NewRabbitMqService(serviceUrl string, queues []RabbitMqQueue) *RabbitMqService {
 	s := &RabbitMqService{queues: queues}
-	if err := s.connect(serviceUrl); err != nil {
-		return nil, err
+	go s.Reconnect(serviceUrl)
+	return s
+}
+
+func (r *RabbitMqService) Reconnect(serviceUrl string) {
+	for {
+		r.isReady = false
+		err := r.connect(serviceUrl)
+		if err != nil {
+			select {
+			case <-r.done:
+				return
+			case <-time.After(5 * time.Second):
+			}
+
+			continue
+		}
+		if done := r.ReInit(); done {
+			break
+		}
 	}
-	return s, nil
 }
 
 func (r *RabbitMqService) connect(serviceUrl string) error {
-	c := make(chan *amqp.Error)
-	go func() {
-		<-c
-		r.connect(serviceUrl)
-	}()
 	conn, err := amqp.Dial(serviceUrl)
 	if err != nil {
 		return err
 	}
 	r.connection = conn
-	if err := r.init(); err != nil {
-		return err
-	}
-	conn.NotifyClose(c)
+	r.notifyConnClose = make(chan *amqp.Error)
+	r.connection.NotifyClose(r.notifyConnClose)
 	return nil
 }
 
+func (r *RabbitMqService) ReInit() bool {
+	for {
+		r.isReady = false
+		err := r.init()
+		if err != nil {
+			select {
+			case <-r.done:
+				return true
+			case <-time.After(5 * time.Second):
+			}
+			continue
+		}
+		select {
+		case <-r.done:
+			return true
+		case <-r.notifyConnClose:
+			return false
+		case <-r.notifyChClose:
+		}
+	}
+}
+
 func (r *RabbitMqService) init() error {
-	c := make(chan *amqp.Error)
-	go func() {
-		<-c
-		r.init()
-	}()
 	ch, err := r.connection.Channel()
 	if err != nil {
 		return err
@@ -72,8 +108,9 @@ func (r *RabbitMqService) init() error {
 		}
 	}
 	r.channel = ch
+	r.notifyChClose = make(chan *amqp.Error)
 	r.notifyConfirm = make(chan amqp.Confirmation)
-	ch.NotifyClose(c)
+	ch.NotifyClose(r.notifyChClose)
 	ch.NotifyPublish(r.notifyConfirm)
 	r.isReady = true
 	return nil
@@ -81,12 +118,16 @@ func (r *RabbitMqService) init() error {
 
 func (r *RabbitMqService) Publish(ctx context.Context, topic string, data []byte) error {
 	if !r.isReady {
-		return errors.New("failed to push: not connected")
+		return errNotConnected
 	}
 	for {
 		err := r.UnsafePublish(ctx, topic, data)
 		if err != nil {
-			<-time.After(5 * time.Second)
+			select {
+			case <-r.done:
+				return errShutdown
+			case <-time.After(5 * time.Second):
+			}
 			continue
 		}
 		confirm := <-r.notifyConfirm
@@ -104,7 +145,13 @@ func (r *RabbitMqService) UnsafePublish(ctx context.Context, topic string, data 
 	})
 }
 
-func (r *RabbitMqService) Close() {
+func (r *RabbitMqService) Close() error {
+	if !r.isReady {
+		return errAlreadyClosed
+	}
+	close(r.done)
 	r.channel.Close()
 	r.connection.Close()
+	r.isReady = false
+	return nil
 }
