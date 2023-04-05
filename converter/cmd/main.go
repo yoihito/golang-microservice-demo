@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"log"
+	"time"
 
 	"converter/internal/operations"
 	"converter/internal/services"
@@ -21,8 +22,15 @@ func main() {
 		log.Fatal(err)
 	}
 
-	consumerQueue, err := services.NewRabbitMqService(config.RabbitMqUrl, []services.RabbitMqQueue{{config.VideoQueue}})
-	publisherQueue, err := services.NewRabbitMqService(config.RabbitMqUrl, []services.RabbitMqQueue{{config.AudioQueue}})
+	consumerQueue := services.NewRabbitMqService(config.RabbitMqUrl, []services.RabbitMqQueue{{config.VideoQueue}})
+	publisherQueue := services.NewRabbitMqService(config.RabbitMqUrl, []services.RabbitMqQueue{{config.AudioQueue}})
+
+	for {
+		if consumerQueue.IsReady() && publisherQueue.IsReady() {
+			break
+		}
+		<-time.After(10 * time.Second)
+	}
 
 	msgs, err := consumerQueue.Consume(config.VideoQueue, false)
 	if err != nil {
@@ -45,7 +53,5 @@ func main() {
 			msg.Ack()
 		}
 	}()
-
-	fmt.Println("Waiting for messages...")
 	<-forever
 }

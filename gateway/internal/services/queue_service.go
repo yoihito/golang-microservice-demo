@@ -52,7 +52,7 @@ func (r *RabbitMqService) Reconnect(serviceUrl string) {
 
 			continue
 		}
-		if done := r.ReInit(); done {
+		if done := r.reInit(); done {
 			break
 		}
 	}
@@ -64,12 +64,12 @@ func (r *RabbitMqService) connect(serviceUrl string) error {
 		return err
 	}
 	r.connection = conn
-	r.notifyConnClose = make(chan *amqp.Error)
+	r.notifyConnClose = make(chan *amqp.Error, 1)
 	r.connection.NotifyClose(r.notifyConnClose)
 	return nil
 }
 
-func (r *RabbitMqService) ReInit() bool {
+func (r *RabbitMqService) reInit() bool {
 	for {
 		r.isReady = false
 		err := r.init()
@@ -108,8 +108,8 @@ func (r *RabbitMqService) init() error {
 		}
 	}
 	r.channel = ch
-	r.notifyChClose = make(chan *amqp.Error)
-	r.notifyConfirm = make(chan amqp.Confirmation)
+	r.notifyChClose = make(chan *amqp.Error, 1)
+	r.notifyConfirm = make(chan amqp.Confirmation, 1)
 	ch.NotifyClose(r.notifyChClose)
 	ch.NotifyPublish(r.notifyConfirm)
 	r.isReady = true

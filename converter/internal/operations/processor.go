@@ -63,7 +63,8 @@ func (p *Processor) ProcessMessage(msg services.Delivery) error {
 		OriginalFilename: tmpFile.Name,
 		Email:            event.Email,
 	}
-	err = p.Queue.Publish(context.TODO(), p.Config.AudioQueue, audioExtractedEvent)
+	data, _ := json.Marshal(audioExtractedEvent)
+	err = p.Queue.Publish(context.TODO(), p.Config.AudioQueue, data)
 	if err != nil {
 		return err
 	}
