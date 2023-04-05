@@ -17,7 +17,12 @@
         {
           "id": "pickMicroservice",
           "description": "microservice name",
-          "type": "promptString"
+          "type": "pickString",
+          "options": [
+            "auth",
+            "gateway",
+            "converter"
+          ]
         }
     ]
 }

@@ -3,6 +3,7 @@ package services
 import (
 	"context"
 	"io"
+	"time"
 
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/gridfs"
@@ -19,7 +20,7 @@ type GridFSService struct {
 }
 
 func NewGridFSService(serviceUrl string) (*GridFSService, error) {
-	mongoClient, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(serviceUrl))
+	mongoClient, err := mongo.Connect(context.TODO(), options.Client().ApplyURI(serviceUrl).SetTimeout(5*time.Second))
 	if err != nil {
 		return nil, err
 	}
