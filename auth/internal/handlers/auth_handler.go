@@ -2,30 +2,15 @@ package handlers
 
 import (
 	"auth/internal/utils"
-	"database/sql"
 	"net/http"
-	"os"
-	"time"
 
-	"github.com/golang-jwt/jwt/v4"
 	"github.com/labstack/echo/v4"
 )
 
-type (
-	JwtCustomClaims struct {
-		Email string `json:"email"`
-		jwt.RegisteredClaims
-	}
-
-	LoginRequest struct {
-		Email    string `json:"email" validate:"required,email"`
-		Password string `json:"password" validate:"required"`
-	}
-
-	Handler struct {
-		Db *sql.DB
-	}
-)
+type LoginRequest struct {
+	Email    string `json:"email" validate:"required,email"`
+	Password string `json:"password" validate:"required"`
+}
 
 func (h *Handler) Login(c echo.Context) error {
 	req := new(LoginRequest)
@@ -41,60 +26,44 @@ func (h *Handler) Login(c echo.Context) error {
 		})
 	}
 
-	var passwordDigest string
-	if err := h.Db.QueryRowContext(
-		c.Request().Context(),
-		"SELECT password_digest FROM users WHERE email = $1",
-		req.Email).Scan(&passwordDigest); err != nil {
+	user, err := h.Repo.GetByEmail(c.Request().Context(), req.Email)
+	if err != nil {
 		return c.JSON(http.StatusUnauthorized, echo.Map{
-			"error": err.Error(),
+			"error": "email or password is invalid",
 		})
 	}
-	if !utils.MatchHashAndPassword(passwordDigest, req.Password) {
+	if !utils.MatchHashAndPassword(user.PasswordDigest, req.Password) {
 		return c.JSON(http.StatusUnauthorized, echo.Map{
 			"error": "email or password is invalid",
 		})
 	}
 
-	t, err := createJWTToken(req.Email, os.Getenv("JWT_SECRET"))
-	if err != nil {
+	if t, err := h.TokenManager.CreateToken(user.Email); err != nil {
 		return c.JSON(http.StatusInternalServerError, echo.Map{
 			"error": err.Error(),
 		})
+	} else {
+		return c.JSON(http.StatusOK, echo.Map{
+			"token": t,
+		})
 	}
-	return c.JSON(http.StatusOK, echo.Map{
-		"token": t,
-	})
-}
-
-func createJWTToken(email, secret string) (string, error) {
-	claims := &JwtCustomClaims{
-		email,
-		jwt.RegisteredClaims{
-			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour)),
-		},
-	}
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	t, err := token.SignedString([]byte(secret))
-	if err != nil {
-		return "", err
-	}
-	return t, nil
 }
 
 func (h *Handler) Validate(c echo.Context) error {
-	user := c.Get("user").(*jwt.Token)
-	claims := user.Claims.(*JwtCustomClaims)
-	var userPresent bool
-	if err := h.Db.QueryRowContext(
-		c.Request().Context(),
-		"SELECT 1 FROM users WHERE email = $1",
-		claims.Email).Scan(&userPresent); err != nil {
+	email, ok := h.TokenManager.GetEmailFromToken(c)
+	if !ok {
+		return c.JSON(http.StatusUnauthorized, echo.Map{
+			"error": "token is invalid",
+		})
+	}
+
+	if user, err := h.Repo.GetByEmail(c.Request().Context(), email); err != nil {
 		return c.JSON(http.StatusUnauthorized, echo.Map{
 			"error": err.Error(),
 		})
+	} else {
+		return c.JSON(http.StatusOK, echo.Map{
+			"email": user.Email,
+		})
 	}
-	return c.JSON(http.StatusOK, echo.Map{
-		"email": claims.Email,
-	})
 }
