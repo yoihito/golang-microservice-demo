@@ -2,20 +2,19 @@ package main
 
 import (
 	"fmt"
+	"gateway/config"
 	"gateway/internal/handlers"
 	"gateway/internal/middlewares"
 	"gateway/internal/services"
 	"gateway/internal/utils"
-	"io/fs"
 	"log"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
-	"github.com/spf13/viper"
 )
 
 func main() {
-	config, err := LoadConfig()
+	config, err := config.LoadConfig()
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -69,34 +68,4 @@ func main() {
 	restricted.POST("/upload", handler.Upload)
 
 	e.Logger.Fatal(e.Start(fmt.Sprintf(":%s", config.Port)))
-}
-
-type Config struct {
-	MongoDbUrl     string
-	Port           string
-	AuthServiceUrl string
-	RabbitMqUrl    string
-	Queues         []string
-}
-
-func LoadConfig() (Config, error) {
-	viper.SetConfigFile("application.yaml")
-	viper.AutomaticEnv()
-	if err := viper.ReadInConfig(); err != nil {
-		switch err.(type) {
-		case viper.ConfigFileNotFoundError:
-		case *fs.PathError:
-		default:
-			return Config{}, nil
-		}
-	}
-
-	config := Config{
-		Port:           viper.GetString("PORT"),
-		MongoDbUrl:     viper.GetString("MONGO_DB_URL"),
-		AuthServiceUrl: viper.GetString("AUTH_SERVICE_URL"),
-		RabbitMqUrl:    viper.GetString("RABBIT_MQ_URL"),
-		Queues:         viper.GetStringSlice("QUEUES"),
-	}
-	return config, nil
 }

@@ -8,7 +8,7 @@ import (
 	"converter/internal/operations"
 	"converter/internal/services"
 
-	"converter/internal/config"
+	"converter/config"
 )
 
 func main() {

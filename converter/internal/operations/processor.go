@@ -3,7 +3,7 @@ package operations
 import (
 	"bytes"
 	"context"
-	"converter/internal/config"
+	"converter/config"
 	"converter/internal/services"
 	"encoding/json"
 	"io"
