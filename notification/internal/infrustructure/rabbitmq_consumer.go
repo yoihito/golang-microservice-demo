@@ -1,7 +1,6 @@
-package services
+package infrustructure
 
 import (
-	"context"
 	"errors"
 	"log"
 	"time"
@@ -9,8 +8,7 @@ import (
 	amqp "github.com/rabbitmq/amqp091-go"
 )
 
-type QueueService interface {
-	Publish(ctx context.Context, topic string, message []byte) error
+type MessageConsumer interface {
 	Consume(topic string, autoAck bool) (<-chan Delivery, error)
 }
 
@@ -42,7 +40,7 @@ var (
 	errShutdown      = errors.New("shutting down")
 )
 
-type RabbitMqService struct {
+type RabbitMqConsumer struct {
 	connection      *amqp.Connection
 	channel         *amqp.Channel
 	queues          []RabbitMqQueue
@@ -57,13 +55,13 @@ type RabbitMqQueue struct {
 	Name string
 }
 
-func NewRabbitMqService(serviceUrl string, queues []RabbitMqQueue) *RabbitMqService {
-	s := &RabbitMqService{queues: queues}
+func NewRabbitMqConsumer(serviceUrl string, queues []RabbitMqQueue) *RabbitMqConsumer {
+	s := &RabbitMqConsumer{queues: queues}
 	go s.Reconnect(serviceUrl)
 	return s
 }
 
-func (r *RabbitMqService) Reconnect(serviceUrl string) {
+func (r *RabbitMqConsumer) Reconnect(serviceUrl string) {
 	for {
 		r.isReady = false
 		err := r.connect(serviceUrl)
@@ -82,7 +80,7 @@ func (r *RabbitMqService) Reconnect(serviceUrl string) {
 	}
 }
 
-func (r *RabbitMqService) connect(serviceUrl string) error {
+func (r *RabbitMqConsumer) connect(serviceUrl string) error {
 	conn, err := amqp.Dial(serviceUrl)
 	if err != nil {
 		return err
@@ -93,7 +91,7 @@ func (r *RabbitMqService) connect(serviceUrl string) error {
 	return nil
 }
 
-func (r *RabbitMqService) reInit() bool {
+func (r *RabbitMqConsumer) reInit() bool {
 	for {
 		r.isReady = false
 		err := r.init()
@@ -115,7 +113,7 @@ func (r *RabbitMqService) reInit() bool {
 	}
 }
 
-func (r *RabbitMqService) init() error {
+func (r *RabbitMqConsumer) init() error {
 	ch, err := r.connection.Channel()
 	if err != nil {
 		return err
@@ -140,36 +138,7 @@ func (r *RabbitMqService) init() error {
 	return nil
 }
 
-func (r *RabbitMqService) Publish(ctx context.Context, topic string, data []byte) error {
-	if !r.isReady {
-		return errNotConnected
-	}
-	for {
-		err := r.UnsafePublish(ctx, topic, data)
-		if err != nil {
-			select {
-			case <-r.done:
-				return errShutdown
-			case <-time.After(5 * time.Second):
-			}
-			continue
-		}
-		confirm := <-r.notifyConfirm
-		if confirm.Ack {
-			return nil
-		}
-	}
-}
-
-func (r *RabbitMqService) UnsafePublish(ctx context.Context, topic string, data []byte) error {
-	return r.channel.PublishWithContext(ctx, "", topic, false, false, amqp.Publishing{
-		ContentType:  "application/json",
-		Body:         data,
-		DeliveryMode: amqp.Persistent,
-	})
-}
-
-func (r *RabbitMqService) Close() error {
+func (r *RabbitMqConsumer) Close() error {
 	if !r.isReady {
 		return errAlreadyClosed
 	}
@@ -180,7 +149,7 @@ func (r *RabbitMqService) Close() error {
 	return nil
 }
 
-func (r *RabbitMqService) Consume(topic string, autoAck bool) (<-chan Delivery, error) {
+func (r *RabbitMqConsumer) Consume(topic string, autoAck bool) (<-chan Delivery, error) {
 	msgs, err := r.channel.Consume(topic, "", autoAck, false, false, false, nil)
 	if err != nil {
 		return nil, err
@@ -209,6 +178,6 @@ func (r *RabbitMqService) Consume(topic string, autoAck bool) (<-chan Delivery, 
 	return deliveries, nil
 }
 
-func (r *RabbitMqService) IsReady() bool {
+func (r *RabbitMqConsumer) IsReady() bool {
 	return r.isReady
 }

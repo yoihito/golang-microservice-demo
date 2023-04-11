@@ -5,6 +5,7 @@ import (
 	"context"
 
 	"github.com/labstack/echo/v4"
+	"github.com/rs/zerolog"
 )
 
 type UserRepo interface {
@@ -19,4 +20,5 @@ type TokenManager interface {
 type Handler struct {
 	Repo         UserRepo
 	TokenManager TokenManager
+	Logger       *zerolog.Logger
 }

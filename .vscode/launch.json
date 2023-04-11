@@ -21,7 +21,8 @@
           "options": [
             "auth",
             "gateway",
-            "converter"
+            "converter",
+            "notification"
           ]
         }
     ]

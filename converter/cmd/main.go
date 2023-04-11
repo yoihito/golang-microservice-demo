@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"time"
 
@@ -45,7 +44,7 @@ func main() {
 	forever := make(chan bool)
 	go func() {
 		for msg := range msgs {
-			fmt.Printf("Received Message: %s\n", msg.Body())
+			log.Printf("Received Message: %s\n", msg.Body())
 			if err := processor.ProcessMessage(msg); err != nil {
 				msg.Nack()
 				continue

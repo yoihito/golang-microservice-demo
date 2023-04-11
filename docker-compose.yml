@@ -78,6 +78,17 @@ services:
         condition: service_healthy
       rabbitmq:
         condition: service_healthy
-
+  notification:
+    build: ./notification
+    environment:
+      - RABBIT_MQ_URL=amqp://guest:guest@rabbitmq:5672
+      - AUDIO_QUEUE=audios
+      - SMTP_HOST=smtp.freesmtpservers.com
+      - SMTP_PORT=25
+      - FROM_EMAIL=no-reply@microservice.com
+      - DOWNLOAD_HOST=http://localhost:1324
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
 volumes:
   postgres-data:

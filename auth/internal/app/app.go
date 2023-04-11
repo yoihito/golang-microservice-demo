@@ -22,8 +22,20 @@ func Run(config config.Config) {
 	}
 
 	e := echo.New()
+	e.HideBanner = true
 	e.Validator = utils.NewCustomValidator(validator.New())
-	e.Use(middleware.Logger())
+	logger := infrustructure.NewZerologLogger("auth")
+	e.Use(middleware.RequestLoggerWithConfig(middleware.RequestLoggerConfig{
+		LogURI:    true,
+		LogStatus: true,
+		LogValuesFunc: func(c echo.Context, v middleware.RequestLoggerValues) error {
+			logger.Info().
+				Str("URI", v.URI).
+				Int("status", v.Status).
+				Msg("request")
+			return nil
+		},
+	}))
 	e.Use(middleware.Recover())
 
 	tokenManager := infrustructure.NewJWTTokenManager(config.SecretKey)
@@ -31,6 +43,7 @@ func Run(config config.Config) {
 	handler := &handlers.Handler{
 		Repo:         repositories.NewUser(datastore),
 		TokenManager: tokenManager,
+		Logger:       logger,
 	}
 
 	e.POST("/login", handler.Login)

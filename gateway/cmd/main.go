@@ -39,20 +39,7 @@ func main() {
 	e := echo.New()
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
-	e.HTTPErrorHandler = func(err error, c echo.Context) {
-		if c.Response().Committed {
-			return
-		}
-
-		if jsonError, ok := err.(utils.JSONError); ok {
-			if err := c.JSON(jsonError.Code, jsonError); err != nil {
-				e.Logger.Error(err)
-			}
-			return
-		}
-		e.DefaultHTTPErrorHandler(err, c)
-	}
-
+	e.HTTPErrorHandler = utils.NewHTTPErrorHandler(e)
 	authService := services.NewAuthService(
 		config.AuthServiceUrl,
 	)
