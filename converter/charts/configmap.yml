@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: converter-configmap-v1
+data:
+  MONGO_DB_URL: mongodb://root:password@host.minikube.internal:27017
+  RABBIT_MQ_URL: amqp://guest:guest@host.minikube.internal:5672
+  VIDEO_QUEUE: videos
+  AUDIO_QUEUE: audios
+  

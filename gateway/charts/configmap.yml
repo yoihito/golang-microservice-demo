@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: gateway-configmap
+data:
+  MONGO_DB_URL: mongodb://root:password@host.minikube.internal:27017
+  PORT: "1324"
+  AUTH_SERVICE_URL: http://auth-service:1323
+  RABBIT_MQ_URL: amqp://guest:guest@host.minikube.internal:5672
+  QUEUES: "videos"

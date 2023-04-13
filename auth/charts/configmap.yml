@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: auth-configmap
+data:
+  DATABASE_URL: postgresql://authuser:mysecretpassword@host.minikube.internal/auth?sslmode=disable
+  JWT_SECRET: secret
+  PORT: "1323"
