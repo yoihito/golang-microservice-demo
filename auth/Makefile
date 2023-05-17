@@ -1,3 +1,6 @@
+docker-build: 
+	docker build -t microservice-auth .
+
 migrate-create:
 	migrate create -ext sql -dir migrations -seq 'migrate_name'
 
