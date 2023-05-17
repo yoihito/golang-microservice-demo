@@ -1,4 +1,6 @@
 # Microservices demo platform
 
-## Description 
+## Diagram
+
+![diagram](diagram.svg)
 

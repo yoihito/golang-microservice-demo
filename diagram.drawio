@@ -1,0 +1,117 @@
+<mxfile host="app.diagrams.net" modified="2023-05-17T16:31:25.467Z" agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.0.0 Safari/537.36" etag="el8EmO-lkUb2oGL1KrpC" version="21.1.7" type="device">
+  <diagram name="Page-1" id="L7jQuiAfj3l3M3Q5JD04">
+    <mxGraphModel dx="2074" dy="1167" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="okPtYtIKPl7JviYTWBMH-38" value="Kubernetes cluster" style="rounded=1;whiteSpace=wrap;html=1;labelPosition=center;verticalLabelPosition=top;align=center;verticalAlign=bottom;" vertex="1" parent="1">
+          <mxGeometry x="180" y="70" width="1040" height="750" as="geometry" />
+        </mxCell>
+        <mxCell id="okPtYtIKPl7JviYTWBMH-7" style="edgeStyle=orthogonalEdgeStyle;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;curved=1;" edge="1" parent="1" source="okPtYtIKPl7JviYTWBMH-1" target="okPtYtIKPl7JviYTWBMH-2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="okPtYtIKPl7JviYTWBMH-1" value="Client" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="10" y="440" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="okPtYtIKPl7JviYTWBMH-15" style="edgeStyle=orthogonalEdgeStyle;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.356;entryY=1.006;entryDx=0;entryDy=0;entryPerimeter=0;curved=1;" edge="1" parent="1" source="okPtYtIKPl7JviYTWBMH-2" target="okPtYtIKPl7JviYTWBMH-10">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="okPtYtIKPl7JviYTWBMH-36" value="Verify access token" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="okPtYtIKPl7JviYTWBMH-15">
+          <mxGeometry x="-0.1998" y="-2" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="okPtYtIKPl7JviYTWBMH-20" style="edgeStyle=orthogonalEdgeStyle;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;entryPerimeter=0;curved=1;" edge="1" parent="1" source="okPtYtIKPl7JviYTWBMH-2" target="okPtYtIKPl7JviYTWBMH-17">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="okPtYtIKPl7JviYTWBMH-22" style="edgeStyle=orthogonalEdgeStyle;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;entryPerimeter=0;curved=1;" edge="1" parent="1" source="okPtYtIKPl7JviYTWBMH-2" target="okPtYtIKPl7JviYTWBMH-21">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="okPtYtIKPl7JviYTWBMH-35" value="Upload new video and download audio files" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="okPtYtIKPl7JviYTWBMH-22">
+          <mxGeometry x="-0.3091" y="4" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="okPtYtIKPl7JviYTWBMH-2" value="Gateway" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="320" y="440" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="okPtYtIKPl7JviYTWBMH-24" style="edgeStyle=orthogonalEdgeStyle;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0;curved=1;" edge="1" parent="1" source="okPtYtIKPl7JviYTWBMH-3" target="okPtYtIKPl7JviYTWBMH-21">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="okPtYtIKPl7JviYTWBMH-33" value="Download video and upload audio files" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="okPtYtIKPl7JviYTWBMH-24">
+          <mxGeometry x="0.2598" y="-3" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="okPtYtIKPl7JviYTWBMH-25" style="edgeStyle=orthogonalEdgeStyle;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;entryPerimeter=0;curved=1;" edge="1" parent="1" source="okPtYtIKPl7JviYTWBMH-3" target="okPtYtIKPl7JviYTWBMH-17">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="okPtYtIKPl7JviYTWBMH-32" value="Produce audio is ready message" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="okPtYtIKPl7JviYTWBMH-25">
+          <mxGeometry x="-0.1487" y="-22" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="okPtYtIKPl7JviYTWBMH-3" value="Converter" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="790" y="600" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="okPtYtIKPl7JviYTWBMH-29" style="edgeStyle=orthogonalEdgeStyle;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0.55;entryY=0.95;entryDx=0;entryDy=0;entryPerimeter=0;curved=1;" edge="1" parent="1" source="okPtYtIKPl7JviYTWBMH-5" target="okPtYtIKPl7JviYTWBMH-28">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="okPtYtIKPl7JviYTWBMH-30" value="Send email" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="okPtYtIKPl7JviYTWBMH-29">
+          <mxGeometry x="0.0466" y="17" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="okPtYtIKPl7JviYTWBMH-5" value="Notification" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="860" y="320" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="okPtYtIKPl7JviYTWBMH-16" value="" style="group" vertex="1" connectable="0" parent="1">
+          <mxGeometry x="290" y="170" width="250" height="170" as="geometry" />
+        </mxCell>
+        <mxCell id="okPtYtIKPl7JviYTWBMH-10" value="Auth" style="rounded=1;whiteSpace=wrap;html=1;labelPosition=center;verticalLabelPosition=top;align=center;verticalAlign=bottom;" vertex="1" parent="okPtYtIKPl7JviYTWBMH-16">
+          <mxGeometry width="250" height="170" as="geometry" />
+        </mxCell>
+        <mxCell id="okPtYtIKPl7JviYTWBMH-12" value="DB" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="okPtYtIKPl7JviYTWBMH-16">
+          <mxGeometry x="170" y="45" width="60" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="okPtYtIKPl7JviYTWBMH-14" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="okPtYtIKPl7JviYTWBMH-16" source="okPtYtIKPl7JviYTWBMH-13" target="okPtYtIKPl7JviYTWBMH-12">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="okPtYtIKPl7JviYTWBMH-13" value="API" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="okPtYtIKPl7JviYTWBMH-16">
+          <mxGeometry x="20" y="55" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="okPtYtIKPl7JviYTWBMH-19" value="" style="group" vertex="1" connectable="0" parent="1">
+          <mxGeometry x="550" y="430" width="240" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="okPtYtIKPl7JviYTWBMH-17" value="" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;rotation=90;" vertex="1" parent="okPtYtIKPl7JviYTWBMH-19">
+          <mxGeometry x="90" y="-90" width="60" height="240" as="geometry" />
+        </mxCell>
+        <mxCell id="okPtYtIKPl7JviYTWBMH-18" value="RabbitMQ" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="okPtYtIKPl7JviYTWBMH-19">
+          <mxGeometry x="80" y="15" width="60" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="okPtYtIKPl7JviYTWBMH-21" value="Object storage(GridFS)" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;" vertex="1" parent="1">
+          <mxGeometry x="350" y="640" width="110" height="130" as="geometry" />
+        </mxCell>
+        <mxCell id="okPtYtIKPl7JviYTWBMH-23" style="edgeStyle=orthogonalEdgeStyle;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;curved=1;" edge="1" parent="1" source="okPtYtIKPl7JviYTWBMH-17" target="okPtYtIKPl7JviYTWBMH-3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="okPtYtIKPl7JviYTWBMH-34" value="Consume new video is uploaded message" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="okPtYtIKPl7JviYTWBMH-23">
+          <mxGeometry x="0.075" y="-2" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="okPtYtIKPl7JviYTWBMH-26" style="edgeStyle=orthogonalEdgeStyle;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;exitPerimeter=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;curved=1;" edge="1" parent="1" source="okPtYtIKPl7JviYTWBMH-17" target="okPtYtIKPl7JviYTWBMH-5">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="okPtYtIKPl7JviYTWBMH-31" value="Consume audio is ready message" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="okPtYtIKPl7JviYTWBMH-26">
+          <mxGeometry x="-0.0105" y="3" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="okPtYtIKPl7JviYTWBMH-28" value="Email Provider" style="ellipse;shape=cloud;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="880" y="110" width="280" height="180" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
